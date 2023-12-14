@@ -1,0 +1,6 @@
+@RealEstateClassificator.Api_HostAddress = http://localhost:5116
+
+GET {{RealEstateClassificator.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
