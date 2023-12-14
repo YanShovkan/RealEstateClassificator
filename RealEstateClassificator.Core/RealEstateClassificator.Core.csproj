@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RealEstateClassificator.Common\RealEstateClassificator.Common.csproj" />
+    <ProjectReference Include="..\RealEstateClassificator.Dal\RealEstateClassificator.Dal.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,9 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Samolet.Dp.Common.Domain;
-using Samolet.Dp.RealEstateClassifiedParser.ValueObjects.Enums;
-using Samolet.Dp.RealEstateClassifiedParser.ValueObjects.ValueObjects;
+﻿using RealEstateClassificator.Common.Enums;
 
-namespace Samolet.Dp.RealEstateClassifiedParser.Core.Entities;
+namespace RealEstateClassificator.Dal.Entities;
 
 /// <summary>
 /// Карточка объявления.
@@ -43,7 +40,7 @@ public class Card
     /// <summary>
     /// Район.
     /// </summary>
-    public string? Area { get; set; }
+    public string? District { get; set; }
 
     /// <summary>
     /// Адрес.
@@ -68,7 +65,7 @@ public class Card
     /// <summary>
     /// Площадь квартиры.
     /// </summary>
-    public double? Area { get; set; }
+    public double? TotalArea { get; set; }
 
     /// <summary>
     /// Жилая площадь.
@@ -113,7 +110,7 @@ public class Card
     /// <summary>
     /// Вид из окон.
     /// </summary>
-    public AdAttribute<WindowViewType>? WindowsView { get; set; }
+    public WindowViewType? WindowsView { get; set; }
 
     /// <summary>
     /// Охрана.
@@ -149,4 +146,14 @@ public class Card
     /// Квартира является студией.
     /// </summary>
     public bool? IsStudio { get; set; }
+
+    /// <summary>
+    /// Свойство для фильтрации.
+    /// </summary>
+    public string? FilterProperty { get; set; }
+
+    /// <summary>
+    /// Класс объявления.
+    /// </summary>
+    public int? ClassOfCard { get; set; }
 }
