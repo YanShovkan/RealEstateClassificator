@@ -19,14 +19,12 @@ public class CardProfile : Profile
         CreateMap<JObject, CardDto[]>()
            .ConvertUsing((src, _, ctx) => ctx.Mapper.Map<CardDto[]>(src.SelectToken(AvitoParsingSettings.JsonMapping.ItemListSelector)?.Children().ToArray()));
 
-        // Normalize string array
-        CreateMap<string[], string>()
-            .ConvertUsing(_ => string.Join(' ', _));
-
-        CreateMap<string, List<string>>()
-            .ConvertUsing(_ => new() { _ });
-
         var cardMap = CreateMap<JToken, CardDto>();
+
+        foreach (var (destinationKey, sourcePath) in AvitoParsingSettings.JsonMapping.MembersMap)
+        {
+            MapProperty(cardMap, destinationKey, sourcePath);
+        }
     }
 
     private static string?[] SelectValue(JToken source, string jsonPath) =>
