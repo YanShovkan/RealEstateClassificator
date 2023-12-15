@@ -20,7 +20,7 @@ public class Card
     /// <summary>
     /// Медиа файлы.
     /// </summary>
-    public List<string> MediaFiles { get; } = new();
+    public List<string> MediaFiles { get; } = [];
 
     /// <summary>
     /// Стоимость.

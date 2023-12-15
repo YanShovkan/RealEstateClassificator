@@ -13,7 +13,7 @@ namespace RealEstateClassificator.Core.Services;
 /// <summary>
 /// Сборщик карточек объявлений Авито.
 /// </summary>
-public class Crawler : ICrawler
+public class CrawlerService : ICrawler
 {
     private static int MaxPageNumber => 100;
 
@@ -32,7 +32,7 @@ public class Crawler : ICrawler
     private int pageNumber = 1;
     string NextPageUrl = string.Empty;
 
-    public Crawler(IWebDriver webDriver, IMapper mapper)
+    public CrawlerService(IWebDriver webDriver, IMapper mapper)
     {
         _webDriver = webDriver;
         _mapper = mapper;
