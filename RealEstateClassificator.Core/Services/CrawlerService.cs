@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
 using RealEstateClassificator.Common.ValueObjects;
 using RealEstateClassificator.Core.Services.Interfaces;
 using RealEstateClassificator.CoreSettings.DefaultSettings;
 using RealEstateClassificator.Dal.Entities;
-using System.Diagnostics.Tracing;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -28,14 +28,16 @@ public class CrawlerService : ICrawler
 
     private readonly IWebDriver _webDriver;
     private readonly IMapper _mapper;
+    private readonly ICardNormalizator _cardNormalizator;
     private bool lastPage = false;
     private int pageNumber = 1;
     string NextPageUrl = string.Empty;
 
-    public CrawlerService(IWebDriver webDriver, IMapper mapper)
+    public CrawlerService(IWebDriver webDriver, IMapper mapper, ICardNormalizator cardNormalizator)
     {
         _webDriver = webDriver;
         _mapper = mapper;
+        _cardNormalizator = cardNormalizator;
     }
 
     public IEnumerable<(IEnumerable<Card> Cards, string FirstUrl, IEnumerable<string>? Urls, int? AdsCount)> GetCardsFromNextPageOrUrls()
@@ -117,7 +119,6 @@ public class CrawlerService : ICrawler
             try
             {
                 _webDriver.Navigate().GoToUrl(url);
-                _webDriver.Stop();
             }
             catch (WebDriverTimeoutException)
             {
@@ -200,12 +201,7 @@ public class CrawlerService : ICrawler
         foreach (var card in page)
         {
             _cardNormalizator.Normalize(card);
-            AddPropertiesToCard(card, command);
-
-            if (!card.RealEstateType.Equals(RealEstateType.Undefined))
-            {
-                cards.Add(card);
-            }
+            cards.Add(card);
         }
 
         return cards;
@@ -229,23 +225,14 @@ public class CrawlerService : ICrawler
         var rangeCount = adsCount / MaxAdsCountOnListPages;
         long pricePeek = 3_500_000;
 
-        var priceRanges = RangeSplitHelper.StepRanges(new PriceRange<long>(1, 100_000_000), rangeCount * 2, pricePeek);
+        var priceRanges = RangeSplitHelper.StepRanges(new PriceRange(1, 100_000_000), rangeCount * 2, pricePeek);
 
         return priceRanges.Select(_ => GenerateUrl(_, startUrl));
     }
 
     private IEnumerable<PriceRange> SplitRange(string url, int steps)
-    {
-        var result = RangeSplitHelper.StepRanges(GetRangeFromUrl(url), steps);
+        => RangeSplitHelper.StepRanges(GetRangeFromUrl(url), steps);
 
-        if (result.Count() == 1)
-        {
-            var item = result.Single();
-            _logger.Error("Не удалось разбить интервал от {From} до {To}", item.From, item.To);
-        }
-
-        return result;
-    }
 
     private (IEnumerable<Card> Cards, int AdsCount) GetPageData()
     {
@@ -302,7 +289,7 @@ public class CrawlerService : ICrawler
             try
             {
                 var content = element.GetAttribute("innerHTML");
-                if (content?.StartsWith("window.__initialData__"))
+                if (content?.StartsWith("window.__initialData__") ?? false)
                 {
                     return content!;
                 }
@@ -319,7 +306,7 @@ public class CrawlerService : ICrawler
         AvitoUrlHelper.GetRangeFromUrl(url);
 
     private string GenerateUrl(PriceRange range, string startUrl) =>
-        AvitoUrlHelper.GenerateUrl(range, startUrl, realEstateType);
+        AvitoUrlHelper.GenerateUrl(range, startUrl);
 
     private string GetStartUrl()
         => AvitoParsingSettings.StartUrl

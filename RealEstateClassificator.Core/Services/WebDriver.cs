@@ -1,4 +1,5 @@
-﻿using RealEstateClassificator.Core.Services.Interfaces;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 
 namespace RealEstateClassificator.Core.Services;
 
@@ -24,7 +25,7 @@ public static class WebDriver
             });
 
         driver.ExecuteCdpCommand("Network.enable", new Dictionary<string, object> { });
-        driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(classifiedParserSettings.SeleniumTimeoutPageLoadSeconds);
+        driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
         return driver;
     }
 }
