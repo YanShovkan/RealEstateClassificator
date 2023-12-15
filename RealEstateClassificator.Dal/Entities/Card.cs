@@ -73,11 +73,6 @@ public class Card
     public double? KitchenArea { get; set; }
 
     /// <summary>
-    /// Высота потолков.
-    /// </summary>
-    public double? CeilingHeight { get; set; }
-
-    /// <summary>
     /// Ремонт.
     /// </summary>
     public RenovationType? Renovation { get; set; }
@@ -98,29 +93,9 @@ public class Card
     public int? BalconiesCount { get; set; }
 
     /// <summary>
-    /// Количество лоджий.
-    /// </summary>
-    public int? LoggiasCount { get; set; }
-
-    /// <summary>
-    /// Вид из окон.
-    /// </summary>
-    public WindowViewType? WindowsView { get; set; }
-
-    /// <summary>
-    /// Охрана.
-    /// </summary>
-    public bool? Security { get; set; }
-
-    /// <summary>
     /// Расстояние от города.
     /// </summary>
     public double? DistanceToCity { get; set; }
-
-    /// <summary>
-    /// Материал стен.
-    /// </summary>
-    public WallMaterialType? ConstructionType { get; set; }
 
     /// <summary>
     /// Год постройки.
