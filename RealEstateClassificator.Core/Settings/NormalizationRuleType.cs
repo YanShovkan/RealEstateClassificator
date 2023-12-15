@@ -3,15 +3,10 @@
 public enum NormalizationRuleType
 {
     None,
-    Regex,,
-    Replacement,
-    ToEnum,
+    Regex,
     AddTextBefore,
-    RoomCount,
-    EnumToInt,
-    BoolToInt,
-    Area,
     StringToBool,
-    EnumToIntOrInt,
-    Floor
+    Floor,
+    ToEnum,
+    EnumToInt
 }

@@ -1,17 +1,8 @@
 ﻿using RealEstateClassificator.Common.Enums;
 
-namespace RealEstateClassificator.Dal.Entities;
-
-/// <summary>
-/// Карточка объявления.
-/// </summary>
-public class Card
+namespace RealEstateClassificator.Core.Dto;
+public record CardDto
 {
-    /// <summary>
-    /// Идентификатор.
-    /// </summary>
-    public Guid Id { get; set; }
-
     /// <summary>
     /// Ссылка на URL объявления.
     /// </summary>
@@ -20,7 +11,7 @@ public class Card
     /// <summary>
     /// Стоимость.
     /// </summary>
-    public long Price { get; set; } 
+    public string Price { get; set; } = null!;
 
     /// <summary>
     /// Описание объявления.
@@ -40,110 +31,85 @@ public class Card
     /// <summary>
     /// Адрес.
     /// </summary>
-    public string Address { get; set; } = new(string.Empty);
+    public string Address { get; set; } = null!;
 
     /// <summary>
     /// Этаж.
     /// </summary>
-    public int? Floor { get; set; }
+    public string? Floor { get; set; }
 
     /// <summary>
     /// Кол-во этажей.
     /// </summary>
-    public int? Floors { get; set; }
+    public string? Floors { get; set; }
 
     /// <summary>
     /// Комнат.
     /// </summary>
-    public int? Rooms { get; set; }
+    public string? Rooms { get; set; }
 
     /// <summary>
     /// Площадь квартиры.
     /// </summary>
-    public double? TotalArea { get; set; }
+    public string? TotalArea { get; set; }
 
     /// <summary>
     /// Жилая площадь.
     /// </summary>
-    public double? LivingArea { get; set; }
+    public string? LivingArea { get; set; }
 
     /// <summary>
     /// Площадь кухни.
     /// </summary>
-    public double? KitchenArea { get; set; }
-
-    /// <summary>
-    /// Высота потолков.
-    /// </summary>
-    public double? CeilingHeight { get; set; }
+    public string? KitchenArea { get; set; }
 
     /// <summary>
     /// Ремонт.
     /// </summary>
-    public RenovationType? Renovation { get; set; }
+    public string? Renovation { get; set; }
 
     /// <summary>
     /// Количество совмещенных санузлов.
     /// </summary>
-    public int? CombinedBathrooms { get; set; }
+    public string? CombinedBathrooms { get; set; }
 
     /// <summary>
     /// Количество раздельных санузлов.
     /// </summary>
-    public int? SeparateBathrooms { get; set; }
+    public string? SeparateBathrooms { get; set; }
 
     /// <summary>
     /// Количество балконов.
     /// </summary>
-    public int? BalconiesCount { get; set; }
-
-    /// <summary>
-    /// Количество лоджий.
-    /// </summary>
-    public int? LoggiasCount { get; set; }
-
-    /// <summary>
-    /// Вид из окон.
-    /// </summary>
-    public WindowViewType? WindowsView { get; set; }
-
-    /// <summary>
-    /// Охрана.
-    /// </summary>
-    public bool? Security { get; set; }
-
+    public string? BalconiesCount { get; set; }
+            
     /// <summary>
     /// Расстояние от города.
     /// </summary>
-    public double? DistanceToCity { get; set; }
-
-    /// <summary>
-    /// Материал стен.
-    /// </summary>
-    public WallMaterialType? ConstructionType { get; set; }
+    public string? DistanceToCity { get; set; }
 
     /// <summary>
     /// Год постройки.
     /// </summary>
-    public int? BuiltYear { get; set; }
+    public string? BuiltYear { get; set; }
 
     /// <summary>
     /// Лифты пассажирские количество.
     /// </summary>
-    public int? PassengerLiftsCount { get; set; }
+    public string? PassengerLiftsCount { get; set; }
 
     /// <summary>
     /// Лифты грузовые количество.
     /// </summary>
-    public int? CargoLiftsCount { get; set; }
+    public string? CargoLiftsCount { get; set; }
 
     /// <summary>
     /// Квартира является студией.
     /// </summary>
-    public bool? IsStudio { get; set; }
+    public string? IsStudio { get; set; }
 
     /// <summary>
-    /// Класс объявления.
+    /// Свойство для фильтрации.
     /// </summary>
-    public int? ClassOfCard { get; set; }
+    public string? FilterProperty { get; set; }
 }

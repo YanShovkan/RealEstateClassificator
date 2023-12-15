@@ -1,4 +1,5 @@
 ﻿using RealEstateClassificator.Common.Enums;
+using RealEstateClassificator.Core.Dto;
 using RealEstateClassificator.Core.Settings;
 using RealEstateClassificator.Dal.Entities;
 
@@ -21,34 +22,33 @@ public static class AvitoParsingSettings
             "$..buyerItem",
             new()
             {
-                { nameof(Card.FilterProperty), "$.id" },
-                { nameof(Card.Url), "$.urlPath" },
-                { nameof(Card.MediaFiles), "$.images[*]['864x648']" },
-                { nameof(Card.Address), "$.item.address" },
-                { nameof(Card.Description), "$.description" },
-                { nameof(Card.Price), "$.priceDetailed.value" },
-                { nameof(Card.ConstructionType), "$.ga[?(@.itemID)]['house_type','garage_type','material_sten']" },
-                { nameof(Card.Rooms), "$.paramsDto.items[?(@.title =~ /^(Количество комнат)|(Комнат в квартире)$/)].description" },
-                { nameof(Card.IsStudio), "$.paramsDto.items[?(@.title =~ /^(Количество комнат)|(Комнат в квартире)$/)].description" },
-                { nameof(Card.Renovation), "$.paramsDto.items[?(@.title =~ /Ремонт|Отделка/)].description" },
-                { nameof(Card.CeilingHeight), Param("Высота потолков") },
-                { nameof(Card.CombinedBathrooms), Param("Санузел") },
-                { nameof(Card.SeparateBathrooms), Param("Санузел") },
-                { nameof(Card.PassengerLiftsCount), HouseParam("Пассажирский лифт") },
-                { nameof(Card.CargoLiftsCount), HouseParam("Грузовой лифт") },
-                { nameof(Card.City), "$..location.name" },
-                { nameof(Card.District), "$..geo['references', 'geoReferences'][0].content" },
-                { nameof(Card.TotalArea), "$.ga[?(@.categorySlug != 'zemelnye_uchastki')]..['area', 'house_area']" },
-                { nameof(Card.LivingArea), "$.ga[?(@.area)].area_live" },
-                { nameof(Card.KitchenArea), "$.ga[?(@.area)].area_kitchen" },
-                { nameof(Card.BalconiesCount), Param("Балкон или лоджия") },
-                { nameof(Card.LoggiasCount), Param("Балкон или лоджия") },
-                { nameof(Card.Floor), Param("Этаж") },
-                { nameof(Card.Floors), "$.ga..floors_count" },
-                { nameof(Card.BuiltYear), AnyParam("Год постройки") },
-                { nameof(Card.WindowsView), Param("Окна") },
-                { nameof(Card.Security), Param("Охрана") },
-                { nameof(Card.DistanceToCity), Param("Расстояние до центра города") }
+                { nameof(CardDto.FilterProperty), "$.id" },
+                { nameof(CardDto.Url), "$.urlPath" },
+                { nameof(CardDto.Address), "$.item.address" },
+                { nameof(CardDto.Description), "$.description" },
+                { nameof(CardDto.Price), "$.priceDetailed.value" },
+                { nameof(CardDto.ConstructionType), "$.ga[?(@.itemID)]['house_type','garage_type','material_sten']" },
+                { nameof(CardDto.Rooms), "$.paramsDto.items[?(@.title =~ /^(Количество комнат)|(Комнат в квартире)$/)].description" },
+                { nameof(CardDto.IsStudio), "$.paramsDto.items[?(@.title =~ /^(Количество комнат)|(Комнат в квартире)$/)].description" },
+                { nameof(CardDto.Renovation), "$.paramsDto.items[?(@.title =~ /Ремонт|Отделка/)].description" },
+                { nameof(CardDto.CeilingHeight), Param("Высота потолков") },
+                { nameof(CardDto.CombinedBathrooms), Param("Санузел") },
+                { nameof(CardDto.SeparateBathrooms), Param("Санузел") },
+                { nameof(CardDto.PassengerLiftsCount), HouseParam("Пассажирский лифт") },
+                { nameof(CardDto.CargoLiftsCount), HouseParam("Грузовой лифт") },
+                { nameof(CardDto.City), "$..location.name" },
+                { nameof(CardDto.District), "$..geo['references', 'geoReferences'][0].content" },
+                { nameof(CardDto.TotalArea), "$.ga[?(@.categorySlug != 'zemelnye_uchastki')]..['area', 'house_area']" },
+                { nameof(CardDto.LivingArea), "$.ga[?(@.area)].area_live" },
+                { nameof(CardDto.KitchenArea), "$.ga[?(@.area)].area_kitchen" },
+                { nameof(CardDto.BalconiesCount), Param("Балкон или лоджия") },
+                { nameof(CardDto.LoggiasCount), Param("Балкон или лоджия") },
+                { nameof(CardDto.Floor), Param("Этаж") },
+                { nameof(CardDto.Floors), "$.ga..floors_count" },
+                { nameof(CardDto.BuiltYear), AnyParam("Год постройки") },
+                { nameof(CardDto.WindowsView), Param("Окна") },
+                { nameof(CardDto.Security), Param("Охрана") },
+                { nameof(CardDto.DistanceToCity), Param("Расстояние до центра города") }
             });
 
     public static List<NormalizationRule> NormalizationRules = new()

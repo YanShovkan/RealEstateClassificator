@@ -15,8 +15,6 @@ public record NormalizationRule
 
     public string? PatternValue { get; set; }
 
-    public List<(string, string)>? ReplacementValues { get; set; }
-
     /// <summary>
     /// Словарь: часть значения в классифайде - Enum.
     /// </summary>
@@ -34,12 +32,6 @@ public record NormalizationRule
 
     public static NormalizationRule EnumToInt(string attributeName, Dictionary<string, int> intMapping) =>
     new(attributeName, NormalizationRuleType.EnumToInt)
-    {
-        IntMapping = intMapping
-    };
-
-    public static NormalizationRule EnumToIntOrInt(string attributeName, Dictionary<string, int> intMapping) =>
-    new(attributeName, NormalizationRuleType.EnumToIntOrInt)
     {
         IntMapping = intMapping
     };
