@@ -27,11 +27,9 @@ public static class AvitoParsingSettings
                 { nameof(CardDto.Address), "$.item.address" },
                 { nameof(CardDto.Description), "$.description" },
                 { nameof(CardDto.Price), "$.priceDetailed.value" },
-                { nameof(CardDto.ConstructionType), "$.ga[?(@.itemID)]['house_type','garage_type','material_sten']" },
                 { nameof(CardDto.Rooms), "$.paramsDto.items[?(@.title =~ /^(Количество комнат)|(Комнат в квартире)$/)].description" },
                 { nameof(CardDto.IsStudio), "$.paramsDto.items[?(@.title =~ /^(Количество комнат)|(Комнат в квартире)$/)].description" },
                 { nameof(CardDto.Renovation), "$.paramsDto.items[?(@.title =~ /Ремонт|Отделка/)].description" },
-                { nameof(CardDto.CeilingHeight), Param("Высота потолков") },
                 { nameof(CardDto.CombinedBathrooms), Param("Санузел") },
                 { nameof(CardDto.SeparateBathrooms), Param("Санузел") },
                 { nameof(CardDto.PassengerLiftsCount), HouseParam("Пассажирский лифт") },
@@ -42,12 +40,9 @@ public static class AvitoParsingSettings
                 { nameof(CardDto.LivingArea), "$.ga[?(@.area)].area_live" },
                 { nameof(CardDto.KitchenArea), "$.ga[?(@.area)].area_kitchen" },
                 { nameof(CardDto.BalconiesCount), Param("Балкон или лоджия") },
-                { nameof(CardDto.LoggiasCount), Param("Балкон или лоджия") },
                 { nameof(CardDto.Floor), Param("Этаж") },
                 { nameof(CardDto.Floors), "$.ga..floors_count" },
                 { nameof(CardDto.BuiltYear), AnyParam("Год постройки") },
-                { nameof(CardDto.WindowsView), Param("Окна") },
-                { nameof(CardDto.Security), Param("Охрана") },
                 { nameof(CardDto.DistanceToCity), Param("Расстояние до центра города") }
             });
 

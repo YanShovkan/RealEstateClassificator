@@ -5,9 +5,9 @@ namespace RealEstateClassificator.Core.Services;
 
 public static class WebDriver
 {
-    public static IWebDriver SetupWebDriver(ChromeOptions chromeOptions)
+    public static IWebDriver SetupWebDriver()
     {
-        var driver = new ChromeDriver(Environment.CurrentDirectory, chromeOptions);
+        var driver = new ChromeDriver("C:\\Users\\yan\\source\\repos\\RealEstateClassificator");
 
         driver.ExecuteCdpCommand("Network.setBlockedURLs", new Dictionary<string, object>
             {

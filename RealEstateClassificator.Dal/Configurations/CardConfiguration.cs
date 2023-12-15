@@ -12,9 +12,6 @@ internal class CardConfiguration: IEntityTypeConfiguration<Card>
         builder.Property(_ => _.Url)
             .HasMaxLength(256)
             .IsRequired();
-
-        builder.Property(_ => _.MediaFiles)
-            .HasColumnType("text[]");
     }
 
 }

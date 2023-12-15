@@ -2,9 +2,11 @@
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
 using RealEstateClassificator.Common.ValueObjects;
+using RealEstateClassificator.Core.Dto;
 using RealEstateClassificator.Core.Services.Interfaces;
 using RealEstateClassificator.CoreSettings.DefaultSettings;
 using RealEstateClassificator.Dal.Entities;
+using System;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -15,86 +17,76 @@ namespace RealEstateClassificator.Core.Services;
 /// </summary>
 public class CrawlerService : ICrawler
 {
-    private static int MaxPageNumber => 100;
-
-    private static int MaxAdsCountOnListPages => 4500;
-
-    private static int AdsCountOnListPage => 50;
+    private static int MaxAdsCountOnListPages => 2500;
 
     private static string CreateAvitoUrl(string pathAndQuery) => $"https://www.avito.ru{pathAndQuery}";
 
     // отсекаются карточки, с пустым "id", тк там рекламный блок.
-    private bool ActualCardFilter(Card card) => !string.IsNullOrEmpty(card.FilterProperty);
+    private bool ActualCardFilter(CardDto card) => !string.IsNullOrEmpty(card.FilterProperty);
 
     private readonly IWebDriver _webDriver;
     private readonly IMapper _mapper;
-    private readonly ICardNormalizator _cardNormalizator;
-    private bool lastPage = false;
-    private int pageNumber = 1;
-    string NextPageUrl = string.Empty;
+    private bool _lastPage;
+    private int _pageNumber = 1;
+    private string _nextPageUrl = string.Empty;
 
-    public CrawlerService(IWebDriver webDriver, IMapper mapper, ICardNormalizator cardNormalizator)
+    public CrawlerService(IMapper mapper)
     {
-        _webDriver = webDriver;
+        _webDriver = WebDriver.SetupWebDriver();
         _mapper = mapper;
-        _cardNormalizator = cardNormalizator;
     }
 
-    public IEnumerable<(IEnumerable<Card> Cards, string FirstUrl, IEnumerable<string>? Urls, int? AdsCount)> GetCardsFromNextPageOrUrls()
+    public async IAsyncEnumerable<IEnumerable<Card>> GetCardsFromNextPageOrUrls()
     {
+        await Task.Delay(1);
         int previousEmptyPages = 0;
         int reloadEmptyPages = 0;
-        string firstUrl = string.Empty;
 
-        if (pageNumber == 1)
+        if (_pageNumber == 1)
         {
-            NextPageUrl = GetStartUrl();
-            firstUrl = NextPageUrl;
+            _nextPageUrl = GetStartUrl();
         }
-
 
         do
         {
-            var currentUrl = NextPageUrl;
+            var currentUrl = _nextPageUrl;
             (var page, var adsCount) = GetPage();
-
-            int? adsCountInClassified = pageNumber == 1 ? adsCount : null;
 
             if (adsCount > MaxAdsCountOnListPages)
             {
                 var urls = GetUrlsSplitByPrice(adsCount);
-                yield return (Enumerable.Empty<Card>(), firstUrl, urls, adsCountInClassified);
+                yield return Enumerable.Empty<Card>();
                 yield break;
             }
             else
             {
-                var cards = NormalizePage(page);
+                var cards = _mapper.Map<List<Card>>(page);
 
                 if (previousEmptyPages > 0)
                 {
                     // убедится, что открылась следующая страница, а не редирект на 1. ИЛИ если это уже 6 пустая, то выйти.
-                    if (CurrentPageFromUrl() != pageNumber || previousEmptyPages > 5)
+                    if (CurrentPageFromUrl() != _pageNumber || previousEmptyPages > 5)
                     {
                         yield break;
                     }
                 }
 
                 // при пустой странице, перезапускаем браузер с новым прокси, тк это баг Авито.
-                if (!cards.Any() && reloadEmptyPages < 10 && pageNumber != 1)
+                if (!cards.Any() && reloadEmptyPages < 10 && _pageNumber != 1)
                 {
                     reloadEmptyPages++;
-                    NextPageUrl = currentUrl;
+                    _nextPageUrl = currentUrl;
                     continue;
                 }
 
                 // на регионах, где совсем нет карточек (костыль, тк иначе нельзя определить карточек нет потому что нет, или это баг авито)
-                if (!cards.Any() && pageNumber == 1)
+                if (!cards.Any() && _pageNumber == 1)
                 {
-                    yield return (cards, firstUrl, null, adsCountInClassified);
+                    yield return cards;
                     yield break;
                 }
 
-                pageNumber++;
+                _pageNumber++;
                 reloadEmptyPages = 0;
 
                 // иногда открывается страница без карточек, надо открыть следующую, и убедиться, что она тоже пустая
@@ -104,7 +96,7 @@ public class CrawlerService : ICrawler
                     continue;
                 }
 
-                yield return (cards, firstUrl, null, adsCountInClassified);
+                yield return cards;
             }
         }
         while (true);
@@ -149,29 +141,16 @@ public class CrawlerService : ICrawler
         while (i < attemptCount);
     }
 
-    private bool IsBlokingPage()
-    {
-        try
-        {
-            var title = _webDriver.Title;
-        }
-        catch
-        {
-            return true;
-        }
-        return false;
-    }
-
-    private (List<Card> Cards, int AdsCount) GetPage()
+    private (List<CardDto> Cards, int AdsCount) GetPage()
     {
         int mainElementNotFoundCounter = 0, adsCount = 0;
-        IEnumerable<Card> page;
+        IEnumerable<CardDto> page;
 
         do
         {
             try
             {
-                LoadPage(NextPageUrl, 10);
+                LoadPage(_nextPageUrl, 10);
                 (page, adsCount) = GetPageData();
 
                 if (!page.Any())
@@ -195,68 +174,29 @@ public class CrawlerService : ICrawler
         return (page.ToList(), adsCount);
     }
 
-    private List<Card> NormalizePage(List<Card> page)
-    {
-        var cards = new List<Card>();
-        foreach (var card in page)
-        {
-            _cardNormalizator.Normalize(card);
-            cards.Add(card);
-        }
-
-        return cards;
-    }
-
-    private int CurrentPageFromUrl()
-    {
-        var uriQuery = new Uri(_webDriver.Url).Query;
-        var pageNumberString = HttpUtility.ParseQueryString(uriQuery).Get("p");
-        if (string.IsNullOrEmpty(pageNumberString) || !int.TryParse(pageNumberString, out int pageNumber))
-        {
-            return -1;
-        }
-
-        return pageNumber;
-    }
-
-    private IEnumerable<string> GetUrlsSplitByPrice(int adsCount)
-    {
-        var startUrl = GetStartUrl();
-        var rangeCount = adsCount / MaxAdsCountOnListPages;
-        long pricePeek = 3_500_000;
-
-        var priceRanges = RangeSplitHelper.StepRanges(new PriceRange(1, 100_000_000), rangeCount * 2, pricePeek);
-
-        return priceRanges.Select(_ => GenerateUrl(_, startUrl));
-    }
-
-    private IEnumerable<PriceRange> SplitRange(string url, int steps)
-        => RangeSplitHelper.StepRanges(GetRangeFromUrl(url), steps);
-
-
-    private (IEnumerable<Card> Cards, int AdsCount) GetPageData()
+    private (IEnumerable<CardDto> Cards, int AdsCount) GetPageData()
     {
         var payload = GetJDataFromPage();
 
         if (payload is null)
         {
-            return (Array.Empty<Card>(), 0);
+            return (Array.Empty<CardDto>(), 0);
         }
 
         var nextPageUrl = payload.SelectToken(AvitoParsingSettings.NextPageUrlJPath)?.Value<string>();
 
         if (string.IsNullOrEmpty(nextPageUrl))
         {
-            lastPage = true;
+            _lastPage = true;
         }
         else
         {
-            NextPageUrl = CreateAvitoUrl(nextPageUrl);
+            _nextPageUrl = CreateAvitoUrl(nextPageUrl);
         }
 
         var adsCount = payload.SelectToken(AvitoParsingSettings.TotalAdsCount)?.Value<int>() ?? 0;
 
-        return (_mapper.Map<Card[]>(payload).Where(ActualCardFilter).ToArray(), adsCount);
+        return (_mapper.Map<CardDto[]>(payload).Where(ActualCardFilter).ToArray(), adsCount);
     }
 
     private JObject? GetJDataFromPage()
@@ -302,11 +242,44 @@ public class CrawlerService : ICrawler
         return null;
     }
 
-    private PriceRange GetRangeFromUrl(string url) =>
-        AvitoUrlHelper.GetRangeFromUrl(url);
+    private bool IsBlokingPage()
+    {
+        try
+        {
+            var title = _webDriver.Title;
+        }
+        catch
+        {
+            return true;
+        }
+        return false;
+    }
 
-    private string GenerateUrl(PriceRange range, string startUrl) =>
-        AvitoUrlHelper.GenerateUrl(range, startUrl);
+    private int CurrentPageFromUrl()
+    {
+        var uriQuery = new Uri(_webDriver.Url).Query;
+        var pageNumberString = HttpUtility.ParseQueryString(uriQuery).Get("p");
+        if (string.IsNullOrEmpty(pageNumberString) || !int.TryParse(pageNumberString, out int pageNumber))
+        {
+            return -1;
+        }
+
+        return pageNumber;
+    }
+
+    private IEnumerable<string> GetUrlsSplitByPrice(int adsCount)
+    {
+        var startUrl = GetStartUrl();
+        var rangeCount = adsCount / MaxAdsCountOnListPages;
+        long pricePeek = 3_500_000;
+
+        var priceRanges = RangeSplitHelper.StepRanges(new PriceRange(1, 100_000_000), rangeCount * 2, pricePeek);
+
+        return priceRanges.Select(_ => AvitoUrlHelper.GenerateUrl(_, startUrl));
+    }
+
+    private IEnumerable<PriceRange> SplitRange(string url, int steps)
+        => RangeSplitHelper.StepRanges(AvitoUrlHelper.GetRangeFromUrl(url), steps);
 
     private string GetStartUrl()
         => AvitoParsingSettings.StartUrl
