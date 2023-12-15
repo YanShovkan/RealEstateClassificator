@@ -13,6 +13,7 @@ public class CardProfile : Profile
     public CardProfile()
     {
         CreateMap<CardDto, Card>()
+            .ForMember(_ => _.Url, opt => opt.MapFrom(_ => $"https://www.avito.ru{_.Url}"))
             .ForMember(_ => _.Price, opt => opt.MapFrom(_ => Convert.ToInt64(_.Price)))
             .ForMember(_ => _.Floor, opt => opt.MapFrom(_ => Convert.ToInt32(_.Floor)))
             .ForMember(_ => _.Floors, opt => opt.MapFrom(_ => Convert.ToInt32(_.Floors)))

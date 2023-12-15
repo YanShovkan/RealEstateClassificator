@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using RealEstateClassificator.Core.Dto;
+﻿using Microsoft.AspNetCore.Mvc;
 using RealEstateClassificator.Core.Services.Interfaces;
 using RealEstateClassificator.Dal.Entities;
 
@@ -10,20 +8,20 @@ namespace RealEstateClassificator.Api.Controllers
     [ApiController]
     public class ClassificatorController : ControllerBase
     {
-        private readonly ICrawler _crawler;
-        public ClassificatorController(ICrawler crawler)
+        private readonly IPageParserService _pageParserService;
+        public ClassificatorController(IPageParserService pageParserService)
         {
-            _crawler = crawler;
+            _pageParserService = pageParserService;
         }
 
         [HttpGet("parse")]
-        public async Task<IEnumerable<Card>> StartParsing()
+        public IEnumerable<Card> StartParsing()
         {
             var caca = new List<Card>();
 
-            await foreach(var cards in _crawler.GetCardsFromNextPageOrUrls())
+            foreach(var cards in _pageParserService.GetCardsFromNextPage())
             {
-                caca.AddRange(cards);
+                Console.WriteLine("ПАША ИГОШИН ГЕЙ!");
             }
 
             return caca;

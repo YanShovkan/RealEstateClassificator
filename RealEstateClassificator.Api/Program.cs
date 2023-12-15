@@ -11,7 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(CardProfile));
-builder.Services.AddScoped<ICrawler, CrawlerService>();
+builder.Services.AddScoped<IPageParserService, PageParserService>();
+builder.Services.AddScoped<ICardParserService, CardParserService>();
 
 var app = builder.Build();
 

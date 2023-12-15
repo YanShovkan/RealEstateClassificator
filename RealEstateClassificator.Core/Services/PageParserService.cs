@@ -1,37 +1,45 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
-using RealEstateClassificator.Common.ValueObjects;
 using RealEstateClassificator.Core.Dto;
 using RealEstateClassificator.Core.Services.Interfaces;
-using RealEstateClassificator.CoreSettings.DefaultSettings;
 using RealEstateClassificator.Dal.Entities;
-using System;
 using System.Text.RegularExpressions;
 using System.Web;
-using static System.Net.WebRequestMethods;
 
 namespace RealEstateClassificator.Core.Services;
 
 /// <summary>
 /// Сборщик карточек объявлений Авито.
 /// </summary>
-public class CrawlerService : ICrawler
+public class PageParserService : IPageParserService
 {
     private readonly IWebDriver _webDriver;
     private readonly IMapper _mapper;
     private string _nextPageUrl = string.Empty;
     private int _pageNumber = 1;
 
-    public CrawlerService(IMapper mapper)
+    public PageParserService(IMapper mapper)
     {
         _webDriver = WebDriver.SetupWebDriver();
         _mapper = mapper;
     }
 
-    public async IAsyncEnumerable<IEnumerable<Card>> GetCardsFromNextPageOrUrls()
+    public void GetRealEstates(IEnumerable<Card> cards)
     {
-        await Task.Delay(1);
+        var cardsDto = new List<CardDto>();
+        foreach (var card in cards)
+        {
+            _nextPageUrl = card.Url;
+            var page = GetPage();
+            cardsDto.AddRange(page);
+        }
+
+        var kon4a = _mapper.Map<Card>(cardsDto);
+    }
+
+    public IEnumerable<IEnumerable<Card>> GetCardsFromNextPage()
+    {
         _nextPageUrl = "https://www.avito.ru/ulyanovskaya_oblast/kvartiry/prodam-ASgBAgICAUSSA8YQ?p=1";
 
         do
