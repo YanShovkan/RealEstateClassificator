@@ -8,8 +8,14 @@ public class RealEstateClassificatorContext : DbContext
     {
         if (optionsBuilder.IsConfigured == false)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=valutnikDB;Username=postgres;Password=123");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=RealEstateClassificator;Username=postgres;Password=123");
         }
         base.OnConfiguring(optionsBuilder);
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+        base.OnModelCreating(modelBuilder);
     }
 }

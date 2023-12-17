@@ -1,4 +1,5 @@
 ﻿namespace RealEstateClassificator.Common.ValueObjects;
+
 public static class RangeSplitHelper
 {
     public static IEnumerable<PriceRange> StepRanges(PriceRange range, long rangeCount, long? pick = default) =>

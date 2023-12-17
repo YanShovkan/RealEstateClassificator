@@ -1,5 +1,8 @@
 ﻿namespace RealEstateClassificator.Common.Enums;
 
+/// <summary>
+/// Материал стен.
+/// </summary>
 public enum WallMaterialType
 {
     Default = 0,

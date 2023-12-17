@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using RealEstateClassificator.Common.Enums;
 using RealEstateClassificator.Core.Dto;
-using RealEstateClassificator.Core.Settings;
 using RealEstateClassificator.CoreSettings.DefaultSettings;
 using RealEstateClassificator.Dal.Entities;
 
@@ -41,7 +40,6 @@ public class CardProfile : Profile
             MapProperty(cardMap, destinationKey, sourcePath);
         }
     }
-
 
     private RenovationType ParseRenovationType(string? renovation) =>
         renovation switch

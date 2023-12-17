@@ -1,6 +1,5 @@
-﻿using RealEstateClassificator.Common.Enums;
+﻿namespace RealEstateClassificator.Core.Dto;
 
-namespace RealEstateClassificator.Core.Dto;
 public record CardDto
 {
     /// <summary>
