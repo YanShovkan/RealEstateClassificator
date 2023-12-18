@@ -1,7 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using RealEstateClassificator.Core.Profiles;
 using RealEstateClassificator.Core.Services;
 using RealEstateClassificator.Core.Services.Interfaces;
 using RealEstateClassificator.Dal;
+using RealEstateClassificator.Dal.Interfaces;
+using RealEstateClassificator.Dal.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +17,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(CardProfile));
 builder.Services.AddScoped<IPageParserService, PageParserService>();
 builder.Services.AddScoped<ICardParserService, CardParserService>();
-builder.Services.AddNpgsql<RealEstateClassificatorContext>("Host=localhost;Port=5432;Database=RealEstateClassificator;Username=postgres;Password=123");
+builder.Services.AddDbContext<RealEstateClassificatorContext>(x => x.UseNpgsql("Host=localhost;Port=5432;Database=RealEstateClassificator;Username=postgres;Password=123"));
+builder.Services.AddScoped(typeof(IReadRepository<>), typeof(ReadRepository<>));
+builder.Services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));
+builder.Services.AddScoped(typeof(IQueryRepository<>), typeof(QueryRepository<>));
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -9,9 +9,11 @@ namespace RealEstateClassificator.Api.Controllers
     public class ClassificatorController : ControllerBase
     {
         private readonly IPageParserService _pageParserService;
-        public ClassificatorController(IPageParserService pageParserService)
+        private readonly ICardParserService _cardParserService;
+        public ClassificatorController(IPageParserService pageParserService, ICardParserService cardParserService)
         {
             _pageParserService = pageParserService;
+            _cardParserService = cardParserService;
         }
 
         [HttpGet("parse")]
@@ -21,7 +23,7 @@ namespace RealEstateClassificator.Api.Controllers
 
             foreach(var cards in _pageParserService.GetCardsFromNextPage())
             {
-                Console.WriteLine("ПАША ИГОШИН ГЕЙ!");
+                _cardParserService.ParseRealEstates(cards);
             }
 
             return caca;

@@ -3,7 +3,9 @@ using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
 using RealEstateClassificator.Core.Dto;
 using RealEstateClassificator.Core.Services.Interfaces;
+using RealEstateClassificator.Core.Settings;
 using RealEstateClassificator.Dal.Entities;
+using System.Runtime;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -14,8 +16,6 @@ public class CardParserService : ICardParserService
 
     private readonly IWebDriver _webDriver;
     private readonly IMapper _mapper;
-    private string _nextPageUrl = string.Empty;
-    private int _pageNumber = 1;
 
     public CardParserService(IMapper mapper)
     {
@@ -25,13 +25,34 @@ public class CardParserService : ICardParserService
 
     public void ParseRealEstates(IEnumerable<Card> cards)
     {
-        var cardsDto = new List<CardDto>();
         foreach (var card in cards)
         {
-            _nextPageUrl = card.Url;
-            var page = GetPage();
-            cardsDto.AddRange(page);
+            GetRealEstate(card);
         }
+    }
+
+    private void GetRealEstate(Card card)
+    {
+        JObject? jsonData = null;
+
+
+        LoadPage(card.Url);
+
+        if (Is404Page())
+        {
+            //удаляем
+        }
+
+        jsonData = GetJDataFromPage();
+
+
+        if (jsonData == null)
+        {
+            //удаляем
+        }
+
+        card = _mapper.Map<Card>(jsonData!.SelectToken(AvitoParsingSettings.JsonMapping.AdSelector));
+        //сохраняем карту
     }
 
     private void LoadPage(string url)
@@ -58,25 +79,17 @@ public class CardParserService : ICardParserService
         while (i < 3);
     }
 
-    private IEnumerable<CardDto> GetPage()
+    private bool IsBlokingPage()
     {
-        LoadPage(_nextPageUrl);
-        return GetPageData();
-    }
-
-
-    private IEnumerable<CardDto> GetPageData()
-    {
-        var payload = GetJDataFromPage();
-
-        if (payload is null)
+        try
         {
-            return Array.Empty<CardDto>();
+            var title = _webDriver.Title;
         }
-
-        _nextPageUrl = $"https://www.avito.ru/ulyanovskaya_oblast/kvartiry/prodam-ASgBAgICAUSSA8YQ?p={_pageNumber}";
-
-        return _mapper.Map<CardDto[]>(payload).ToArray();
+        catch
+        {
+            return true;
+        }
+        return false;
     }
 
     private JObject? GetJDataFromPage()
@@ -122,17 +135,9 @@ public class CardParserService : ICardParserService
         return null;
     }
 
-    private bool IsBlokingPage()
+    private bool Is404Page()
     {
-        try
-        {
-            var title = _webDriver.Title;
-        }
-        catch
-        {
-            return true;
-        }
-        return false;
+        return _webDriver.Title == "Ошибка 404. Страница не найдена";
     }
 }
 
