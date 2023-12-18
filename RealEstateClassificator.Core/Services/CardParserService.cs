@@ -5,6 +5,10 @@ using RealEstateClassificator.Core.Dto;
 using RealEstateClassificator.Core.Services.Interfaces;
 using RealEstateClassificator.Core.Settings;
 using RealEstateClassificator.Dal.Entities;
+using RealEstateClassificator.Dal.Interfaces;
+using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.Runtime;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -13,14 +17,17 @@ namespace RealEstateClassificator.Core.Services;
 
 public class CardParserService : ICardParserService
 {
-
-    private readonly IWebDriver _webDriver;
+    private readonly ICommandRepository<Card> _commandRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IWebDriver _webDriver;
 
-    public CardParserService(IMapper mapper)
+    public CardParserService(ICommandRepository<Card> commandRepository, IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _webDriver = WebDriver.SetupWebDriver();
+        _commandRepository = commandRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _webDriver = WebDriver.SetupWebDriver();
     }
 
     public void ParseRealEstates(IEnumerable<Card> cards)
@@ -33,27 +40,29 @@ public class CardParserService : ICardParserService
 
     private void GetRealEstate(Card card)
     {
-        JObject? jsonData = null;
-
-
         LoadPage(card.Url);
 
         if (Is404Page())
         {
-            //удаляем
+            _commandRepository.Delete(card);
+            _unitOfWork.Commit();
+            return;
         }
 
-        jsonData = GetJDataFromPage();
+        var jsonData = GetJDataFromPage();
 
-
-        if (jsonData == null)
+        if (jsonData is null)
         {
-            //удаляем
+            _commandRepository.Delete(card);
+            _unitOfWork.Commit();
+            return;
         }
 
-       var carddto = _mapper.Map<CardDto>(jsonData!.SelectToken(AvitoParsingSettings.JsonMapping.AdSelector));
-        card = _mapper.Map<Card>(carddto);
-        //сохраняем карту
+        var cardDto = _mapper.Map<CardDto>(jsonData!.SelectToken(AvitoParsingSettings.JsonMapping.AdSelector));
+        var parsedCard = _mapper.Map<Card>(cardDto);
+        card = EnrichCard(card, parsedCard);
+        _commandRepository.CreateAsync(card);
+        _unitOfWork.Commit();
     }
 
     private void LoadPage(string url)
@@ -140,5 +149,32 @@ public class CardParserService : ICardParserService
     {
         return _webDriver.Title == "Ошибка 404. Страница не найдена";
     }
+
+    private Card EnrichCard(Card card, Card parsedCard) =>
+        new()
+        {
+            Id = card.Id,
+            Url = card.Url,
+            Price = card.Price,
+            Description = card.Description,
+            City = parsedCard.City,
+            District = parsedCard.District,
+            Address = parsedCard.Address,
+            Floor = parsedCard.Floor,
+            Floors = parsedCard.Floors,
+            Rooms = parsedCard.Rooms,
+            TotalArea = parsedCard.TotalArea,
+            LivingArea = parsedCard.LivingArea,
+            KitchenArea = parsedCard.KitchenArea,
+            Renovation = parsedCard.Renovation,
+            CombinedBathrooms = parsedCard.CombinedBathrooms,
+            SeparateBathrooms = parsedCard.SeparateBathrooms,
+            BalconiesCount = parsedCard.BalconiesCount,
+            DistanceToCity = parsedCard.DistanceToCity,
+            BuiltYear = parsedCard.BuiltYear,
+            PassengerLiftsCount = parsedCard.PassengerLiftsCount,
+            CargoLiftsCount = parsedCard.CargoLiftsCount,
+            IsStudio = parsedCard.IsStudio
+        };
 }
 

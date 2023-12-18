@@ -14,20 +14,20 @@ public class CardProfile : Profile
         CreateMap<CardDto, Card>()
             .ForMember(_ => _.Url, opt => opt.MapFrom(_ => $"https://www.avito.ru{_.Url}"))
             .ForMember(_ => _.Price, opt => opt.MapFrom(_ => Convert.ToInt64(_.Price)))
-            .ForMember(_ => _.Floor, opt => opt.MapFrom(_ => Convert.ToInt32(_.Floor)))
-            .ForMember(_ => _.Floors, opt => opt.MapFrom(_ => Convert.ToInt32(_.Floors)))
-            .ForMember(_ => _.Rooms, opt => opt.MapFrom(_ => Convert.ToInt32(_.Rooms)))
-            .ForMember(_ => _.TotalArea, opt => opt.MapFrom(_ => Convert.ToDouble(_.TotalArea)))
-            .ForMember(_ => _.LivingArea, opt => opt.MapFrom(_ => Convert.ToDouble(_.LivingArea)))
-            .ForMember(_ => _.KitchenArea, opt => opt.MapFrom(_ => Convert.ToDouble(_.KitchenArea)))
+            .ForMember(_ => _.Floor, opt => opt.MapFrom(_ => ParseToInt(_.Floor!.Split(" ", StringSplitOptions.None)[0])))
+            .ForMember(_ => _.Floors, opt => opt.MapFrom(_ => ParseToInt(_.Floors)))
+            .ForMember(_ => _.Rooms, opt => opt.MapFrom(_ => ParseToInt(_.Rooms)))
+            .ForMember(_ => _.TotalArea, opt => opt.MapFrom(_ => ParseToDouble(_.TotalArea!.Split(" ", StringSplitOptions.None)[0])))
+            .ForMember(_ => _.LivingArea, opt => opt.MapFrom(_ => ParseToDouble(_.LivingArea!.Split(" ", StringSplitOptions.None)[0])))
+            .ForMember(_ => _.KitchenArea, opt => opt.MapFrom(_ => ParseToDouble(_.KitchenArea!.Split(" ", StringSplitOptions.None)[0])))
             .ForMember(_ => _.Renovation, opt => opt.MapFrom(_ => ParseRenovationType(_.Renovation)))
             .ForMember(_ => _.CombinedBathrooms, opt => opt.MapFrom(_ => ParseCombinedBathrooms(_.CombinedBathrooms)))
             .ForMember(_ => _.SeparateBathrooms, opt => opt.MapFrom(_ => ParseSeparateBathrooms(_.SeparateBathrooms)))
             .ForMember(_ => _.BalconiesCount, opt => opt.MapFrom(_ => ParseBalconiesCount(_.BalconiesCount)))
-            .ForMember(_ => _.DistanceToCity, opt => opt.MapFrom(_ => Convert.ToDouble(_.DistanceToCity)))
-            .ForMember(_ => _.BuiltYear, opt => opt.MapFrom(_ => Convert.ToInt32(_.BuiltYear)))
-            .ForMember(_ => _.PassengerLiftsCount, opt => opt.MapFrom(_ => Convert.ToInt32(_.PassengerLiftsCount)))
-            .ForMember(_ => _.CargoLiftsCount, opt => opt.MapFrom(_ => Convert.ToInt32(_.CargoLiftsCount)))
+            .ForMember(_ => _.DistanceToCity, opt => opt.MapFrom(_ => ParseToDouble(_.DistanceToCity)))
+            .ForMember(_ => _.BuiltYear, opt => opt.MapFrom(_ => ParseToInt(_.BuiltYear)))
+            .ForMember(_ => _.PassengerLiftsCount, opt => opt.MapFrom(_ => ParseToInt(_.PassengerLiftsCount)))
+            .ForMember(_ => _.CargoLiftsCount, opt => opt.MapFrom(_ => ParseToInt(_.CargoLiftsCount)))
             .ForMember(_ => _.IsStudio, opt => opt.MapFrom(_ => ParseIsStudio(_.IsStudio)));
 
         CreateMap<JObject, CardDto[]>()
@@ -39,6 +39,26 @@ public class CardProfile : Profile
         {
             MapProperty(cardMap, destinationKey, sourcePath);
         }
+    }
+
+    private double ParseToDouble(string? number)
+    {
+        if (number is null)
+        {
+            return 0;
+        }
+
+        return double.TryParse(number, out var result) ? result : 0;
+    }
+
+    private int ParseToInt(string? number)
+    {
+        if(number is null)
+        {
+            return 0;
+        }
+
+        return int.TryParse(number, out var result) ? result : 0;
     }
 
     private RenovationType ParseRenovationType(string? renovation) =>

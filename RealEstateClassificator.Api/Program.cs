@@ -5,6 +5,7 @@ using RealEstateClassificator.Core.Services.Interfaces;
 using RealEstateClassificator.Dal;
 using RealEstateClassificator.Dal.Interfaces;
 using RealEstateClassificator.Dal.Repository;
+using RealEstateClassificator.Dal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<RealEstateClassificatorContext>(x => x.UseNpgsql("
 builder.Services.AddScoped(typeof(IReadRepository<>), typeof(ReadRepository<>));
 builder.Services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));
 builder.Services.AddScoped(typeof(IQueryRepository<>), typeof(QueryRepository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 var app = builder.Build();
