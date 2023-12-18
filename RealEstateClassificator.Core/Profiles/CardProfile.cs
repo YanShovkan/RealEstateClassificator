@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using RealEstateClassificator.Common.Enums;
 using RealEstateClassificator.Core.Dto;
-using RealEstateClassificator.CoreSettings.DefaultSettings;
+using RealEstateClassificator.Core.Settings;
 using RealEstateClassificator.Dal.Entities;
 
 namespace RealEstateClassificator.Core.Profiles;

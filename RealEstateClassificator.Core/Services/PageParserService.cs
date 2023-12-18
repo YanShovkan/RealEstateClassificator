@@ -25,18 +25,6 @@ public class PageParserService : IPageParserService
         _mapper = mapper;
     }
 
-    public void GetRealEstates(IEnumerable<Card> cards)
-    {
-        var cardsDto = new List<CardDto>();
-        foreach (var card in cards)
-        {
-            _nextPageUrl = card.Url;
-            var page = GetPage();
-            cardsDto.AddRange(page);
-        }
-
-        var kon4a = _mapper.Map<Card>(cardsDto);
-    }
 
     public IEnumerable<IEnumerable<Card>> GetCardsFromNextPage()
     {

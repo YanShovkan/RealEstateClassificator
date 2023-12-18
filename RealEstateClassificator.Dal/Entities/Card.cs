@@ -1,16 +1,17 @@
 ﻿using RealEstateClassificator.Common.Enums;
+using RealEstateClassificator.Dal.Interfaces;
 
 namespace RealEstateClassificator.Dal.Entities;
 
 /// <summary>
 /// Карточка объявления.
 /// </summary>
-public class Card
+public class Card : IEntity
 {
     /// <summary>
     /// Идентификатор.
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
     /// <summary>
     /// Ссылка на URL объявления.

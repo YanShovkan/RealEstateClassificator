@@ -1,7 +1,6 @@
 ﻿using RealEstateClassificator.Core.Dto;
-using RealEstateClassificator.Core.Settings;
 
-namespace RealEstateClassificator.CoreSettings.DefaultSettings;
+namespace RealEstateClassificator.Core.Settings;
 public static class AvitoParsingSettings
 {
     public static int AdNewMaxAttemptCount => 20;
