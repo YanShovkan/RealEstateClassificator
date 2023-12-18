@@ -7,7 +7,7 @@ public static class WebDriver
 {
     public static IWebDriver SetupWebDriver()
     {
-        var driver = new ChromeDriver("C:\\Users\\yan\\source\\repos\\RealEstateClassificator");
+        var driver = new ChromeDriver("C:\\Users\\Yan\\source\\repos\\YanShovkan\\RealEstateClassificator");
 
         driver.ExecuteCdpCommand("Network.setBlockedURLs", new Dictionary<string, object>
             {

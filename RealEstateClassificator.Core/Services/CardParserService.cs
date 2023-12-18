@@ -51,7 +51,8 @@ public class CardParserService : ICardParserService
             //удаляем
         }
 
-        card = _mapper.Map<Card>(jsonData!.SelectToken(AvitoParsingSettings.JsonMapping.AdSelector));
+       var carddto = _mapper.Map<CardDto>(jsonData!.SelectToken(AvitoParsingSettings.JsonMapping.AdSelector));
+        card = _mapper.Map<Card>(carddto);
         //сохраняем карту
     }
 
