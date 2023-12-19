@@ -4,6 +4,5 @@ namespace RealEstateClassificator.Core.Services.Interfaces;
 
 public interface ICardParserService
 {
-    void ParseRealEstates(IEnumerable<Card> cards);
-
+    Task ParseRealEstatesAsync(IEnumerable<Card> cards, CancellationToken cancellationToken = default);
 }

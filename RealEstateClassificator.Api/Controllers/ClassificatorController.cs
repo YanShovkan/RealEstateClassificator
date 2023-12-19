@@ -17,16 +17,12 @@ namespace RealEstateClassificator.Api.Controllers
         }
 
         [HttpGet("parse")]
-        public IEnumerable<Card> StartParsing()
+        public async Task StartParsing()
         {
-            var caca = new List<Card>();
-
-            foreach(var cards in _pageParserService.GetCardsFromNextPage())
+            foreach (var cards in _pageParserService.GetCardsFromNextPage())
             {
-                _cardParserService.ParseRealEstates(cards);
+                await _cardParserService.ParseRealEstatesAsync(cards);
             }
-
-            return caca;
         }
     }
 }

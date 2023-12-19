@@ -9,6 +9,6 @@ public interface IUnitOfWork
     ///  Сохранение изменений.
     /// </summary>
     /// <returns></returns>
-    public Task Commit();
+    public Task CommitAsync(CancellationToken cancellationToken = default);
 }
 

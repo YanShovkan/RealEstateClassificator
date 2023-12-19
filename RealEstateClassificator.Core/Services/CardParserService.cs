@@ -30,16 +30,17 @@ public class CardParserService : ICardParserService
         _webDriver = WebDriver.SetupWebDriver();
     }
 
-    public void ParseRealEstates(IEnumerable<Card> cards)
+    public async Task ParseRealEstatesAsync(IEnumerable<Card> cards, CancellationToken cancellationToken = default)
     {
         foreach (var card in cards)
         {
-            GetRealEstate(card);
+           await GetRealEstateAsync(card, cancellationToken);
         }
     }
 
-    private void GetRealEstate(Card card)
+    private async Task GetRealEstateAsync(Card card, CancellationToken cancellationToken = default)
     {
+        await Task.Delay(3000);
         LoadPage(card.Url);
 
         if (Is404Page())
@@ -57,8 +58,8 @@ public class CardParserService : ICardParserService
         var cardDto = _mapper.Map<CardDto>(jsonData!.SelectToken(AvitoParsingSettings.JsonMapping.AdSelector));
         var parsedCard = _mapper.Map<Card>(cardDto);
         card = EnrichCard(card, parsedCard);
-        _commandRepository.CreateAsync(card);
-        _unitOfWork.Commit();
+        await _commandRepository.CreateAsync(card, cancellationToken);
+        await _unitOfWork.CommitAsync(cancellationToken);
     }
 
     private void LoadPage(string url)
