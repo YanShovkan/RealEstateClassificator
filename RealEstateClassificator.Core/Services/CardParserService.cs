@@ -44,8 +44,6 @@ public class CardParserService : ICardParserService
 
         if (Is404Page())
         {
-            _commandRepository.Delete(card);
-            _unitOfWork.Commit();
             return;
         }
 
@@ -53,8 +51,6 @@ public class CardParserService : ICardParserService
 
         if (jsonData is null)
         {
-            _commandRepository.Delete(card);
-            _unitOfWork.Commit();
             return;
         }
 
