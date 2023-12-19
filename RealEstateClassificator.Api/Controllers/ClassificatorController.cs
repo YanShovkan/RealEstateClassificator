@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RealEstateClassificator.Core.Services.Interfaces;
-using RealEstateClassificator.Dal.Entities;
 
 namespace RealEstateClassificator.Api.Controllers
 {
@@ -10,10 +9,12 @@ namespace RealEstateClassificator.Api.Controllers
     {
         private readonly IPageParserService _pageParserService;
         private readonly ICardParserService _cardParserService;
-        public ClassificatorController(IPageParserService pageParserService, ICardParserService cardParserService)
+        private readonly IClassificationService _classificationService;
+        public ClassificatorController(IPageParserService pageParserService, ICardParserService cardParserService, IClassificationService classificationService)
         {
             _pageParserService = pageParserService;
             _cardParserService = cardParserService;
+            _classificationService = classificationService;
         }
 
         [HttpGet("parse")]
@@ -23,6 +24,12 @@ namespace RealEstateClassificator.Api.Controllers
             {
                 await _cardParserService.ParseRealEstatesAsync(cards);
             }
+        }
+
+        [HttpGet("classificate")]
+        public async Task StartClassificating()
+        {
+             await _classificationService.CalculateRealEstateClass();
         }
     }
 }

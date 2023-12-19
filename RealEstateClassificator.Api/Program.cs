@@ -18,6 +18,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(CardProfile));
 builder.Services.AddScoped<IPageParserService, PageParserService>();
 builder.Services.AddScoped<ICardParserService, CardParserService>();
+builder.Services.AddScoped<IClassificationService, ClassificationService>();
 builder.Services.AddDbContext<RealEstateClassificatorContext>(x => x.UseNpgsql("Host=localhost;Port=5432;Database=RealEstateClassificator;Username=postgres;Password=123"));
 builder.Services.AddScoped(typeof(IReadRepository<>), typeof(ReadRepository<>));
 builder.Services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));

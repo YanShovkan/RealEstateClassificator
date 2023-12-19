@@ -8,7 +8,7 @@ public static class WebDriver
     public static IWebDriver SetupWebDriver()
     {
         var options = new ChromeOptions() { DebuggerAddress = "127.0.0.1:9222" };
-        var driver = new ChromeDriver("C:\\Users\\Yan\\source\\repos\\YanShovkan\\RealEstateClassificator", options);
+        var driver = new ChromeDriver("C:\\Users\\yan\\source\\repos\\RealEstateClassificator", options);
 
         driver.ExecuteCdpCommand("Network.setBlockedURLs", new Dictionary<string, object>
             {

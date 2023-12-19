@@ -74,7 +74,7 @@ public class CardProfile : Profile
             "хороший" => RenovationType.Standard,
             "чистовая" => RenovationType.Finishing,
             "черновая" => RenovationType.Rough,
-            _ => RenovationType.None
+            _ => RenovationType.Undefined
         };
 
     private int ParseCombinedBathrooms(string? combinedBathrooms) =>
