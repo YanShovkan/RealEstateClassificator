@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RealEstateClassificator.Common.Specification;
 using RealEstateClassificator.Dal.Interfaces;
+using RealEstateClassificator.Dal.Specification;
 
 namespace RealEstateClassificator.Dal.Repository;
 

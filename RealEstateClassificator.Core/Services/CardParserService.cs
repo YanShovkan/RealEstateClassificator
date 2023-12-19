@@ -6,6 +6,7 @@ using RealEstateClassificator.Core.Services.Interfaces;
 using RealEstateClassificator.Core.Settings;
 using RealEstateClassificator.Dal.Entities;
 using RealEstateClassificator.Dal.Interfaces;
+using RealEstateClassificator.Dal.Specification;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -34,7 +35,10 @@ public class CardParserService : ICardParserService
     {
         foreach (var card in cards)
         {
-           await GetRealEstateAsync(card, cancellationToken);
+            if(!await _commandRepository.FindBySpecification(new CardUrlSpecification(card.Url), cancellationToken))
+            {
+                await GetRealEstateAsync(card, cancellationToken);
+            }
         }
     }
 

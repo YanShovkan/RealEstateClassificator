@@ -1,4 +1,4 @@
-﻿using RealEstateClassificator.Common.Specification;
+﻿using RealEstateClassificator.Dal.Specification;
 
 namespace RealEstateClassificator.Dal.Interfaces;
 

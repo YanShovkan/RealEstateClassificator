@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace RealEstateClassificator.Common.Specification;
+namespace RealEstateClassificator.Dal.Specification;
 public abstract class Specification<T>
 {
     public Expression<Func<T, bool>> Predicate { get; }
