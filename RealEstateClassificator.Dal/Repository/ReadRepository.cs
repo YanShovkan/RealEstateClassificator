@@ -39,4 +39,12 @@ public class ReadRepository<T> : IReadRepository<T> where T : class, IEntity
     /// <returns></returns>
     public async Task<IReadOnlyCollection<T>> GetBySpecification(Specification<T> specification, CancellationToken cancellationToken = default)
         => await Query.Where(specification.Predicate).ToArrayAsync(cancellationToken);
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <param name="specification"><inheritdoc/></param>
+    /// <returns></returns>
+    public async Task<bool> FindBySpecification(Specification<T> specification, CancellationToken cancellationToken = default)
+        => await Query.FirstOrDefaultAsync(specification.Predicate, cancellationToken) is null ? false : true;
 }
