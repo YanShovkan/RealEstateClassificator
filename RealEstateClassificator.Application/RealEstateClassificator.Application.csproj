@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazor.Bootstrap" Version="1.10.4" />
+    <PackageReference Include="Radzen.Blazor" Version="4.23.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RealEstateClassificator.Common\RealEstateClassificator.Common.csproj" />
+    <ProjectReference Include="..\RealEstateClassificator.Core\RealEstateClassificator.Core.csproj" />
+    <ProjectReference Include="..\RealEstateClassificator.Dal\RealEstateClassificator.Dal.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,50 @@
+﻿@page "/cards"
+@using RealEstateClassificator.Dal.Entities
+@using RealEstateClassificator.Dal.Interfaces
+@attribute [StreamRendering]
+
+<PageTitle>Все объявления</PageTitle>
+
+<h1>Квартиры</h1>
+
+@if (_cards == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Url</th>
+                <th>Стоимость</th>
+                <th>Количество комнат</th>
+                <th>Площадь</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var card in _cards)
+            {
+                <tr>
+                    <td><a class="navbar-brand" href="@card.Url">@card.Url</a></td>
+                    <td>@card.Price</td>
+                    <td>@card.Rooms</td>
+                    <td>@card.TotalArea</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    [Inject]
+    protected IQueryRepository<Card> QueryRepository { get; set; }
+
+    private Card[]? _cards;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cards = QueryRepository.GetQuery().Where(_ => _.TotalArea > 0).ToArray();
+    }
+}

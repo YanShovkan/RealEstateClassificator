@@ -1,0 +1,77 @@
+﻿@page "/"
+@using Radzen
+@using Radzen.Blazor
+@using RealEstateClassificator.Common.Enums
+@using RealEstateClassificator.Dal.Entities
+@using RealEstateClassificator.Dal.Interfaces
+
+<PageTitle>Подбор квартир</PageTitle>
+
+<h1>Подбор квартир</h1>
+
+@if (_cards == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <div class="col-md-6 col-lg-4 p-3">
+        <RadzenLabel Text="Выберите категорию:" Component="DropDownChangeEvent" Style="margin-right: 8px; vertical-align: middle;" />
+        <RadzenDropDown TValue="string" Value=@value Data=@groupNames Change="@(args => value = $"{args}")" Style="width: 100%; max-width: 400px;" Name="DropDownChangeEvent" @rendermode="InteractiveServer" />
+    </div>
+
+    <div class="col-md-6 col-lg-4 p-3">
+            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Стоимость до:</RadzenText>
+            <RadzenTextBox Change=@(args => OnChange(args, "TextBox")) aria-label="Default TextBox" />
+    </div>
+
+    <div class="col-md-6 col-lg-4 p-3">
+        <RadzenCheckBox @bind-Value=@val Name="CheckBox1" />
+        <RadzenLabel Text="Старый дом" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Url</th>
+                <th>Стоимость</th>
+                <th>Количество комнат</th>
+                <th>Площадь</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var card in _cards)
+            {
+                <tr>
+                    <td><a class="navbar-brand" href="@card.Url">@card.Url</a></td>
+                    <td>@card.Price</td>
+                    <td>@card.Rooms</td>
+                    <td>@card.TotalArea</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+    [Inject]
+    protected IQueryRepository<Card> QueryRepository { get; set; }
+
+    bool val = false;
+    private Card[]? _cards;
+    string value = "Семейные пары";
+    IEnumerable<string> groupNames = new List<string>() { "Семейные пары", "Молодые пары", "Одинокие люди", "Пожилые люди" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cards = QueryRepository.GetQuery().Where(_ => _.Rooms != 0 && _.ClassOfCard == 0 && _.Price <= 8000000).ToArray();
+    }
+
+    void OnChange(string value, string name)
+    {
+        return;
+    }
+}
